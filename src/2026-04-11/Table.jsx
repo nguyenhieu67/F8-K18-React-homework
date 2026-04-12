@@ -19,7 +19,7 @@ function Table({ customersData, onEdit, onDelete }) {
             text: "Contact",
             render: (customer) => {
                 const phone = customer.phone;
-                if (phone.length === 10) {
+                if (phone?.length === 10) {
                     return (
                         <div>
                             {customer.email}
