@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Table from "./2026-04-07/Table";
+import Login from "./2026-04-11/Login";
+import Customers from "./2026-04-11/Customers";
 
 function App() {
     const [selectId, setSelectId] = useState(null);
@@ -12,8 +14,13 @@ function App() {
         },
         {
             id: 2,
-            date: "2026-04-11",
-            component: null,
+            date: "2026-04-11 / Login",
+            component: <Login onLoginSuccess={() => setSelectId(3)} />,
+        },
+        {
+            id: 3,
+            date: "2026-04-11 / Customer",
+            component: <Customers onLoginFail={() => setSelectId(2)} />,
         },
     ];
 
@@ -25,8 +32,11 @@ function App() {
         <div style={{ padding: 20 }}>
             <ul className="flex gap-4 items-start relative">
                 {homeworks.map((item) => (
-                    <li key={item.id} className="p-2 bg-[#ebebeb] rounded-lg">
-                        <button onClick={() => handleShow(item.id)}>
+                    <li key={item.id}>
+                        <button
+                            className={`${selectId === item.id ? "bg-[#888]" : "bg-[#ebebeb]"} p-2 rounded-lg hover:bg-[#888] cursor-pointer`}
+                            onClick={() => handleShow(item.id)}
+                        >
                             {item.date}
                         </button>
                         {selectId === item.id && (
