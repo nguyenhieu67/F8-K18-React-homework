@@ -1,23 +1,36 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import api, { isTokenExpired } from "./plugins/axios";
 
-function Login({ onLoginSuccess }) {
+interface Props {
+    onLoginSuccess: () => void;
+}
+
+interface AuthResponse {
+    accessToken: string;
+    refreshToken: string;
+}
+
+function Login({ onLoginSuccess }: Props) {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+        {},
+    );
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
-        if (isTokenExpired(token)) {
-            localStorage.clear();
+        if (token && !isTokenExpired(token)) {
+            onLoginSuccess();
         } else {
-            if (onLoginSuccess) onLoginSuccess();
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
         }
     }, [onLoginSuccess]);
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -25,7 +38,7 @@ function Login({ onLoginSuccess }) {
     };
 
     const validateForm = () => {
-        let newErrors = {};
+        const newErrors: { email?: string; password?: string } = {};
 
         if (!formData.email.trim()) {
             newErrors.email = "Email address cannot be left blank.";
@@ -46,7 +59,7 @@ function Login({ onLoginSuccess }) {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         if (!validateForm()) return;
 
@@ -55,7 +68,10 @@ function Login({ onLoginSuccess }) {
         };
 
         try {
-            const response = await api.post("/auth/signin", payload);
+            const response = (await api.post(
+                "/auth/signin",
+                payload,
+            )) as unknown as AuthResponse;
             setFormData({
                 email: "",
                 password: "",
@@ -69,6 +85,7 @@ function Login({ onLoginSuccess }) {
 
             if (onLoginSuccess) onLoginSuccess();
 
+            toast.success("Login successful");
             return accessToken;
         } catch (error) {
             console.error("Lỗi kết nối hoặc CORS:", error);

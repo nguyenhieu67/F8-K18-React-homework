@@ -1,6 +1,1 @@
 @import "tailwindcss";
-
-table tr th,
-table tr td {
-    border: 1px solid;
-}

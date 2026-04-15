@@ -97,18 +97,18 @@ function Table() {
 
     const [students, setStudents] = useState(data);
 
-    const handleEdit = (id) => {
+    const handleEdit = (id: number) => {
         const findStudent = students.find((s) => s.id === id);
         alert(`
-                Id: ${findStudent.id},
-                Teen: ${findStudent.name},
-                Tuoi: ${findStudent.age},
-                Lop: ${findStudent.class},
-                Dia Chi: ${findStudent.address},
+                Id: ${findStudent?.id},
+                Teen: ${findStudent?.name},
+                Tuoi: ${findStudent?.age},
+                Lop: ${findStudent?.class},
+                Dia Chi: ${findStudent?.address},
             `);
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = (id: number) => {
         setStudents((prev) => prev.filter((student) => student.id !== id));
     };
 
@@ -154,7 +154,11 @@ function Table() {
                                 }
                                 return (
                                     <td key={column.value}>
-                                        {student[column.value]}
+                                        {
+                                            student[
+                                                column.value as keyof typeof student
+                                            ]
+                                        }
                                     </td>
                                 );
                             })}

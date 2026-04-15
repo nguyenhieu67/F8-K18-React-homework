@@ -4,7 +4,7 @@ import Login from "./2026-04-11/Login";
 import Customers from "./2026-04-11/Customers";
 
 function App() {
-    const [selectId, setSelectId] = useState(null);
+    const [selectId, setSelectId] = useState<number | null>(null);
 
     const homeworks = [
         {
@@ -24,7 +24,7 @@ function App() {
         },
     ];
 
-    const handleShow = (id) => {
+    const handleShow = (id: number) => {
         setSelectId(selectId === id ? null : id);
     };
 
