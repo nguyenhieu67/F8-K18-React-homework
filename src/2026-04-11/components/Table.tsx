@@ -88,8 +88,12 @@ function TableComp({
                                             key={column.value}
                                         >
                                             {column.render
-                                                ? (column.render(row) ?? "")
-                                                : row[column.value]}
+                                                ? ((column.render(
+                                                      row,
+                                                  ) as React.ReactNode) ?? "")
+                                                : (row[
+                                                      column.value
+                                                  ] as React.ReactNode)}
                                         </TableCell>
                                     );
                                 })}
