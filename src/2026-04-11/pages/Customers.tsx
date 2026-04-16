@@ -91,7 +91,8 @@ function Customers() {
         {
             value: "totalSpending",
             text: "Total spending",
-            render: (customer: Customer) => customer.totalSpending || 0,
+            render: (customer: Customer) =>
+                (customer.totalSpending || 0) as React.ReactNode,
         },
         {
             value: "actions",
