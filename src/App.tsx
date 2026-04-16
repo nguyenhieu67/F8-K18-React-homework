@@ -1,10 +1,15 @@
+import { Box, CircularProgress } from "@mui/material";
 import { useState } from "react";
+
 import Table from "./2026-04-07/Table";
-import Login from "./2026-04-11/Login";
-import Customers from "./2026-04-11/Customers";
+import Login from "./2026-04-11/pages/Login";
+import Customers from "./2026-04-11/pages/Customers";
+import Products from "./2026-04-11/pages/Products";
+import { checkAuth } from "./2026-04-11//plugins/axios";
 
 function App() {
     const [selectId, setSelectId] = useState<number | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const homeworks = [
         {
@@ -20,12 +25,40 @@ function App() {
         {
             id: 3,
             date: "2026-04-11 / Customer",
-            component: <Customers onLoginFail={() => setSelectId(2)} />,
+            component: <Customers />,
+        },
+        {
+            id: 4,
+            date: "2026-04-11 / Products",
+            component: <Products />,
         },
     ];
 
-    const handleShow = (id: number) => {
-        setSelectId(selectId === id ? null : id);
+    const handleShow = async (id: number) => {
+        if (selectId === id) {
+            setSelectId(null);
+            return;
+        }
+        const protectedTabs = [3, 4];
+
+        if (protectedTabs.includes(id)) {
+            setLoading(true);
+            const isAuthorized = await checkAuth();
+
+            if (!isAuthorized) {
+                alert("Vui lòng đăng nhập để tiếp tục!");
+                setLoading(false);
+                setSelectId(2);
+                return;
+            }
+        }
+
+        setLoading(true);
+        setSelectId(id);
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 500);
     };
 
     return (
@@ -39,14 +72,28 @@ function App() {
                         >
                             {item.date}
                         </button>
-                        {selectId === item.id && (
-                            <div className=" absolute w-full top-0 left-0 p-5 mt-10">
-                                {item.component || <h1>Chưa có bài tập mới</h1>}
-                            </div>
-                        )}
                     </li>
                 ))}
             </ul>
+            <div className="mt-8">
+                {selectId === null ? (
+                    <h1 className="flex justify-center">
+                        Vui lòng chọn một bài tập để xem
+                    </h1>
+                ) : loading ? (
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            mt: 10,
+                        }}
+                    >
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    homeworks.find((item) => item.id === selectId)?.component
+                )}
+            </div>
         </div>
     );
 }

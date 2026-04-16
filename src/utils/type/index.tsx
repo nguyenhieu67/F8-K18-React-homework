@@ -23,4 +23,19 @@ interface Customer extends Row {
     rank?: string;
 }
 
-export type { Row, Column, Customer };
+interface Product extends Row {
+    id: number;
+    categoryId: number;
+    name: string;
+    imageId?: string;
+    price?: string;
+    sku?: string;
+    remaining?: string;
+}
+
+interface Category extends Row {
+    id: number;
+    name: string;
+}
+
+export type { Row, Column, Customer, Product, Category };

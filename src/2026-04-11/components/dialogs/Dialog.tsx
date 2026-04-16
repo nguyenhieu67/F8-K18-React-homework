@@ -1,10 +1,4 @@
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogActions, Button } from "@mui/material";
 
 interface Props {
     title: string;
@@ -32,7 +26,7 @@ function DialogComp({
             role="alertdialog"
         >
             <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-            <DialogContent>{children}</DialogContent>
+            {children}
             <DialogActions>
                 <Button variant="outlined" onClick={onClose} color="error">
                     {buttonName[0]}

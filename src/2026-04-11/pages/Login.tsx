@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import api, { isTokenExpired } from "./plugins/axios";
+import api, { isTokenExpired } from "../plugins/axios";
 
 interface Props {
     onLoginSuccess: () => void;

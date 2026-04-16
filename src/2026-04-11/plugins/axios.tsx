@@ -33,11 +33,48 @@ export function isTokenExpired(token: string | null) {
 }
 
 api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("access_token");
+    async (config) => {
+        let token = localStorage.getItem("access_token");
+
+        if (token && isTokenExpired(token)) {
+            console.log("Token sắp hết hạn, đang chủ động làm mới...");
+
+            if (isRefreshing) {
+                token = await new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                });
+            } else {
+                try {
+                    isRefreshing = true;
+                    const refreshToken = localStorage.getItem("refresh_token");
+
+                    const { data } = await axios.post(
+                        `${baseURL}/auth/refresh-token`,
+                        {
+                            refreshToken,
+                        },
+                    );
+
+                    token = data.accessToken;
+                    localStorage.setItem("access_token", data.accessToken);
+                    localStorage.setItem("refresh_token", data.refreshToken);
+
+                    processQueue(null, data.accessToken);
+                } catch (error) {
+                    processQueue(error, null);
+                    localStorage.clear();
+                    window.location.href = "/";
+                    return Promise.reject(error);
+                } finally {
+                    isRefreshing = false;
+                }
+            }
+        }
+
         if (token) {
             config.headers["Authorization"] = `Bearer ${token}`;
         }
+
         return config;
     },
     (error) => Promise.reject(error),
@@ -111,5 +148,34 @@ api.interceptors.response.use(
         return Promise.reject(error);
     },
 );
+
+export async function checkAuth() {
+    const token = localStorage.getItem("access_token");
+    const refreshToken = localStorage.getItem("refresh_token");
+
+    if (!token && !refreshToken) {
+        return false;
+    }
+
+    if (token && !isTokenExpired(token)) {
+        return true;
+    }
+
+    console.log("CheckAuth: Token hết hạn, đang thử làm mới...");
+    try {
+        const { data } = await axios.post(`${baseURL}/auth/refresh-token`, {
+            refreshToken,
+        });
+
+        localStorage.setItem("access_token", data.accessToken);
+        localStorage.setItem("refresh_token", data.refreshToken);
+
+        return true;
+    } catch (error) {
+        console.error("CheckAuth: Refresh thất bại", error);
+        localStorage.clear();
+        return false;
+    }
+}
 
 export default api;

@@ -1,26 +1,12 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import {
-    TextField,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Box,
-    CircularProgress,
-} from "@mui/material";
 
-import api from "./plugins/axios";
-import type { Column, Customer } from "../utils/type";
-import TableComp from "./Table";
-import DialogComp from "./Dialog";
+import api from "../plugins/axios";
+import type { Column, Customer } from "../../utils/type";
+import { Table, Dialog, CustomerDialog } from "../components";
 
-interface Props {
-    onLoginFail: () => void;
-}
-
-function Customers({ onLoginFail }: Props) {
+function Customers() {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
         null,
@@ -30,7 +16,6 @@ function Customers({ onLoginFail }: Props) {
     const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
         null,
     );
-
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -39,7 +24,6 @@ function Customers({ onLoginFail }: Props) {
         rank: "",
     });
     const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
-    const [loading, setLoading] = useState(false);
 
     const toastify = (msg: string) => {
         toast.success(msg);
@@ -116,6 +100,20 @@ function Customers({ onLoginFail }: Props) {
     ];
 
     useEffect(() => {
+        const getCustomers = async () => {
+            try {
+                const res = (await api.get(
+                    "/customers",
+                )) as unknown as Customer[];
+                setCustomers(res);
+            } catch (error: any) {
+                getError(error);
+            }
+        };
+        getCustomers();
+    }, []);
+
+    useEffect(() => {
         if (selectedCustomer) {
             const timer = setTimeout(() => {
                 setFormData({
@@ -130,30 +128,6 @@ function Customers({ onLoginFail }: Props) {
         }
     }, [selectedCustomer]);
 
-    useEffect(() => {
-        const getCustomers = async () => {
-            setLoading(true);
-            try {
-                const res = (await api.get(
-                    "/customers",
-                )) as unknown as Customer[];
-                setCustomers(res);
-            } catch (error: any) {
-                if (
-                    error.response?.status === 401 ||
-                    error.response?.status === 403
-                ) {
-                    onLoginFail();
-                } else {
-                    getError(error);
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-        getCustomers();
-    }, [onLoginFail]);
-
     const handleModelOpen = () => {
         setSelectedCustomer(null);
         setFormData({
@@ -165,6 +139,10 @@ function Customers({ onLoginFail }: Props) {
         });
         setIsModelOpen(true);
         setErrors({});
+    };
+
+    const handleChangeForm = (newData: Customer) => {
+        setSelectedCustomer(newData);
     };
 
     const validateForm = () => {
@@ -218,18 +196,6 @@ function Customers({ onLoginFail }: Props) {
         }
     };
 
-    const handleChange = (
-        e:
-            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-            | { target: { name?: string; value: unknown } },
-    ) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name as string]: value,
-        });
-    };
-
     const handelEdit = (id: number) => {
         const findC = customers.find((c) => c.id === id);
         setSelectedCustomer(findC || null);
@@ -275,22 +241,16 @@ function Customers({ onLoginFail }: Props) {
                 </button>
             </div>
             <ToastContainer />
-            {loading ? (
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <CircularProgress aria-label="Loading…" />
-                </Box>
-            ) : (
-                <TableComp
-                    columns={columns}
-                    rows={customers}
-                    onClickEdit={handelEdit}
-                    onClickDelete={openConfirmDelete}
-                />
-            )}
-
-            <DialogComp
+            <Table
+                columns={columns}
+                rows={customers}
+                onClickEdit={handelEdit}
+                onClickDelete={openConfirmDelete}
+            />
+            {/* Customer */}
+            <Dialog
                 title={
-                    selectedCustomer
+                    selectedCustomer?.id
                         ? `Edit customer name: ${selectedCustomer.name}`
                         : "Create customer"
                 }
@@ -298,70 +258,18 @@ function Customers({ onLoginFail }: Props) {
                 onClose={() => setIsModelOpen(false)}
                 onSubmit={() => handleSubmit(selectedCustomer?.id || 0)}
             >
-                <TextField
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                    label="Name"
-                    name="name"
-                    value={formData?.name}
-                    onChange={handleChange}
+                <CustomerDialog
+                    customer={selectedCustomer}
+                    validate={errors}
+                    onChange={handleChangeForm}
                 />
-                {errors.name && (
-                    <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-                )}
-                <TextField
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                    label="Email"
-                    name="email"
-                    value={formData?.email}
-                    onChange={handleChange}
-                />
-                {errors.email && (
-                    <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-                )}
-                <TextField
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                    label="Phone"
-                    name="phone"
-                    value={formData?.phone}
-                    onChange={handleChange}
-                />
-                <TextField
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                    label="Address"
-                    name="address"
-                    value={formData?.address}
-                    onChange={handleChange}
-                />
-                <FormControl margin="dense" sx={{ width: "30%" }}>
-                    <InputLabel id="rank">Rank</InputLabel>
-                    <Select
-                        label="Rank"
-                        labelId="rank"
-                        name="rank"
-                        value={formData?.rank}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="GOLD">Gold</MenuItem>
-                        <MenuItem value="SILVER">Silver</MenuItem>
-                        <MenuItem value="BRONZE">Bronze</MenuItem>
-                    </Select>
-                </FormControl>
-            </DialogComp>
-
-            <DialogComp
+            </Dialog>
+            <Dialog
                 title={`Are you sure delete ${selectedCustomer?.name || "customer"}?`}
                 isOpen={isConfirmDelete}
                 onClose={() => setIsConfirmDelete(false)}
                 onSubmit={handleDelete}
-            ></DialogComp>
+            ></Dialog>
         </div>
     );
 }
