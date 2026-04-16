@@ -31,14 +31,15 @@ function ProductDialog({ product, categories, validate, onChange }: Props) {
 
         if (name === "category") {
             const selectedCat = categories.find(
-                (cat) => String(cat.id) === String(value),
+                (cat) => Number(cat.id) === Number(value),
             );
-            console.log(selectedCat);
-
             onChange({
                 ...product,
-                category: selectedCat || { id: "", name: "" },
-            });
+                category: {
+                    id: Number(selectedCat?.id),
+                    name: selectedCat?.name,
+                },
+            } as Product);
         } else {
             onChange({
                 ...(product || {}),
@@ -95,11 +96,13 @@ function ProductDialog({ product, categories, validate, onChange }: Props) {
                     label="Categories"
                     labelId="categories"
                     name="category"
-                    value={product?.category?.id || ""}
+                    value={
+                        product?.category?.id ? String(product.category.id) : ""
+                    }
                     onChange={handleChange}
                 >
                     {categories.map((category) => (
-                        <MenuItem key={category.id} value={category.id}>
+                        <MenuItem key={category.id} value={String(category.id)}>
                             {category.name}
                         </MenuItem>
                     ))}

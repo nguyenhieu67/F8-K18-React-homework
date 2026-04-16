@@ -61,7 +61,7 @@ function Products() {
         null,
     );
     const [formData, setFormData] = useState({
-        category: { id: "", name: "" },
+        category: { id: 0, name: "" },
         name: "",
         price: "",
         sku: "",
@@ -92,12 +92,12 @@ function Products() {
         const getProducts = async () => {
             try {
                 const [products, categories] = await Promise.all([
-                    api.get("/products"),
-                    api.get("/categories"),
+                    api.get<Product[]>("/products"),
+                    api.get<Category[]>("/categories"),
                 ]);
 
-                setProducts(products);
-                setCategories(categories);
+                setProducts(products as unknown as Product[]);
+                setCategories(categories as unknown as Category[]);
             } catch (error: any) {
                 getError(error);
             }
@@ -109,7 +109,7 @@ function Products() {
         if (selectedProduct) {
             const timer = setTimeout(() => {
                 setFormData({
-                    category: selectedProduct.category || "",
+                    category: selectedProduct.category || { id: 0, name: "" },
                     name: selectedProduct.name || "",
                     price: selectedProduct.price || "",
                     sku: selectedProduct.sku || "",
@@ -123,7 +123,7 @@ function Products() {
     const handleModelOpen = () => {
         setSelectedProduct(null);
         setFormData({
-            category: { id: "", name: "" },
+            category: { id: 0, name: "" },
             name: "",
             price: "",
             sku: "",
@@ -146,7 +146,7 @@ function Products() {
 
         const categoryId = formData.category?.id;
 
-        if (!categoryId || categoryId === "") {
+        if (!categoryId || categoryId === 0) {
             newErrors.category = "Please select a category.";
         }
 

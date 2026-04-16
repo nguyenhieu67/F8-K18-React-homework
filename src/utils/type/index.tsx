@@ -11,7 +11,12 @@ interface Column {
 
 interface Row {
     id: number;
-    [key: string]: string | number | undefined;
+    [key: string]: string | number | undefined | object;
+}
+
+interface Category {
+    id: number;
+    name: string;
 }
 
 interface Customer extends Row {
@@ -25,17 +30,12 @@ interface Customer extends Row {
 
 interface Product extends Row {
     id: number;
-    categoryId: number;
     name: string;
     imageId?: string;
     price?: string;
     sku?: string;
     remaining?: string;
-}
-
-interface Category extends Row {
-    id: number;
-    name: string;
+    category: Category;
 }
 
 export type { Row, Column, Customer, Product, Category };
