@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import { Box, CircularProgress } from "@mui/material";
+import {
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Box,
+    CircularProgress,
+} from "@mui/material";
 
 import api from "../plugins/axios";
 import type { Column, Customer } from "../../utils/type";
@@ -12,6 +19,7 @@ function Customers() {
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
         null,
     );
+    const [selectedRank, setSelectedRank] = useState<string>("");
     const [isConfirmDelete, setIsConfirmDelete] = useState(false);
     const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
         null,
@@ -46,6 +54,10 @@ function Customers() {
     };
 
     const [formData, setFormData] = useState(customerForm);
+    const filterCustomers =
+        selectedRank === ""
+            ? customers
+            : customers.filter((c) => c.rank === selectedRank);
 
     const columns: Column[] = [
         {
@@ -235,16 +247,6 @@ function Customers() {
 
     return (
         <div>
-            <div className="flex justify-end items-center mb-6">
-                <button
-                    className="bg-[#3498db] hover:opacity-90 text-white rounded-lg px-4 py-2 cursor-pointer"
-                    onClick={handleModelOpen}
-                >
-                    + Create customer
-                </button>
-            </div>
-            <ToastContainer />
-
             {loading ? (
                 <Box
                     sx={{
@@ -256,12 +258,44 @@ function Customers() {
                     <CircularProgress />
                 </Box>
             ) : (
-                <Table
-                    columns={columns}
-                    rows={customers}
-                    onClickEdit={handelEdit}
-                    onClickDelete={openConfirmDelete}
-                />
+                <div>
+                    <div className="flex justify-end items-center mb-6">
+                        <button
+                            className="bg-[#3498db] hover:opacity-90 text-white rounded-lg px-4 py-2 cursor-pointer"
+                            onClick={handleModelOpen}
+                        >
+                            + Create customer
+                        </button>
+                    </div>
+                    <ToastContainer />
+
+                    <div className="flex justify-end items-center">
+                        <FormControl sx={{ width: "20%" }}>
+                            <InputLabel id="rank">Rank</InputLabel>
+                            <Select
+                                label="rank"
+                                labelId="rank"
+                                value={selectedRank}
+                                onChange={(e) =>
+                                    setSelectedRank(e.target.value)
+                                }
+                            >
+                                <MenuItem value="">
+                                    <em>All ranks</em>
+                                </MenuItem>
+                                <MenuItem value="GOLD">Gold</MenuItem>
+                                <MenuItem value="SILVER">Silver</MenuItem>
+                                <MenuItem value="BRONZE">Bronze</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <Table
+                        columns={columns}
+                        rows={filterCustomers}
+                        onClickEdit={handelEdit}
+                        onClickDelete={openConfirmDelete}
+                    />
+                </div>
             )}
 
             {/* Customer */}

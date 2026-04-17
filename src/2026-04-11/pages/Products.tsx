@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import { Box, CircularProgress } from "@mui/material";
+import {
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Box,
+    CircularProgress,
+} from "@mui/material";
 
 import api from "../plugins/axios";
 import type { Column, Product, Category } from "../../utils/type";
@@ -13,6 +20,7 @@ function Products() {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(
         null,
     );
+    const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [isModelOpen, setIsModelOpen] = useState(false);
     const [isConfirmDelete, setIsConfirmDelete] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -39,6 +47,13 @@ function Products() {
 
         toast.error(serverError);
     };
+
+    const filterProducts =
+        selectedCategory === ""
+            ? products
+            : products.filter(
+                  (p) => String(p.category.id) === selectedCategory,
+              );
 
     const productForm: Product = {
         id: 0,
@@ -225,27 +240,54 @@ function Products() {
 
     return (
         <div>
-            <div className="flex justify-end items-center mb-6">
-                <button
-                    className="bg-[#3498db] hover:opacity-90 text-white rounded-lg px-4 py-2 cursor-pointer"
-                    onClick={handleModelOpen}
-                >
-                    + Create product
-                </button>
-            </div>
-            <ToastContainer />
-
             {loading ? (
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
                     <CircularProgress aria-label="Loading…" />
                 </Box>
             ) : (
-                <Table
-                    columns={columns}
-                    rows={products}
-                    onClickEdit={handelEdit}
-                    onClickDelete={openConfirmDelete}
-                />
+                <div>
+                    <div className="flex justify-end items-center mb-6">
+                        <button
+                            className="bg-[#3498db] hover:opacity-90 text-white rounded-lg px-4 py-2 cursor-pointer"
+                            onClick={handleModelOpen}
+                        >
+                            + Create product
+                        </button>
+                    </div>
+                    <ToastContainer />
+
+                    <div className="flex justify-end items-center">
+                        <FormControl sx={{ width: "20%" }}>
+                            <InputLabel id="categories">Categories</InputLabel>
+                            <Select
+                                label="Categories"
+                                labelId="categories"
+                                value={selectedCategory}
+                                onChange={(e) =>
+                                    setSelectedCategory(e.target.value)
+                                }
+                            >
+                                <MenuItem value="">
+                                    <em>All categories</em>
+                                </MenuItem>
+                                {categories.map((category) => (
+                                    <MenuItem
+                                        key={category.id}
+                                        value={String(category.id)}
+                                    >
+                                        {category.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <Table
+                        columns={columns}
+                        rows={filterProducts}
+                        onClickEdit={handelEdit}
+                        onClickDelete={openConfirmDelete}
+                    />
+                </div>
             )}
 
             {/* Product */}
