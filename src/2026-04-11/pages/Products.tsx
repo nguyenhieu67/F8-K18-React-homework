@@ -1,12 +1,56 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { Box, CircularProgress } from "@mui/material";
 
 import api from "../plugins/axios";
 import type { Column, Product, Category } from "../../utils/type";
 import { Table, Dialog, ProductDialog } from "../components";
 
 function Products() {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(
+        null,
+    );
+    const [isModelOpen, setIsModelOpen] = useState(false);
+    const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [productIdToDelete, setProductIdToDelete] = useState<number | null>(
+        null,
+    );
+    const [errors, setErrors] = useState<{
+        name?: string;
+        category?: string;
+    }>({});
+
+    const toastify = (msg: string) => {
+        toast.success(msg);
+    };
+
+    const getError = (error: unknown) => {
+        let serverError = "Đã có lỗi xảy ra!";
+        if (axios.isAxiosError(error)) {
+            serverError =
+                error.response?.data?.message || error.message || serverError;
+        } else if (error instanceof Error) {
+            serverError = error.message;
+        }
+
+        toast.error(serverError);
+    };
+
+    const productForm: Product = {
+        id: 0,
+        category: { id: 0, name: "" },
+        name: "",
+        price: "",
+        sku: "",
+        remaining: "",
+    };
+
+    const [formData, setFormData] = useState(productForm);
+
     const columns: Column[] = [
         {
             value: "avatar",
@@ -50,46 +94,10 @@ function Products() {
             text: "Action",
         },
     ];
-    const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(
-        null,
-    );
-    const [isModelOpen, setIsModelOpen] = useState(false);
-    const [isConfirmDelete, setIsConfirmDelete] = useState(false);
-    const [productIdToDelete, setProductIdToDelete] = useState<number | null>(
-        null,
-    );
-    const [formData, setFormData] = useState({
-        category: { id: 0, name: "" },
-        name: "",
-        price: "",
-        sku: "",
-        remaining: "",
-    });
-    const [errors, setErrors] = useState<{
-        name?: string;
-        category?: string;
-    }>({});
-
-    const toastify = (msg: string) => {
-        toast.success(msg);
-    };
-
-    const getError = (error: unknown) => {
-        let serverError = "Đã có lỗi xảy ra!";
-        if (axios.isAxiosError(error)) {
-            serverError =
-                error.response?.data?.message || error.message || serverError;
-        } else if (error instanceof Error) {
-            serverError = error.message;
-        }
-
-        toast.error(serverError);
-    };
 
     useEffect(() => {
         const getProducts = async () => {
+            setLoading(true);
             try {
                 const [products, categories] = await Promise.all([
                     api.get<Product[]>("/products"),
@@ -98,8 +106,10 @@ function Products() {
 
                 setProducts(products as unknown as Product[]);
                 setCategories(categories as unknown as Category[]);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 getError(error);
+            } finally {
+                setLoading(false);
             }
         };
         getProducts();
@@ -109,6 +119,7 @@ function Products() {
         if (selectedProduct) {
             const timer = setTimeout(() => {
                 setFormData({
+                    id: 0,
                     category: selectedProduct.category || { id: 0, name: "" },
                     name: selectedProduct.name || "",
                     price: selectedProduct.price || "",
@@ -122,13 +133,7 @@ function Products() {
 
     const handleModelOpen = () => {
         setSelectedProduct(null);
-        setFormData({
-            category: { id: 0, name: "" },
-            name: "",
-            price: "",
-            sku: "",
-            remaining: "",
-        });
+        setFormData(productForm);
         setIsModelOpen(true);
         setErrors({});
     };
@@ -230,12 +235,18 @@ function Products() {
             </div>
             <ToastContainer />
 
-            <Table
-                columns={columns}
-                rows={products}
-                onClickEdit={handelEdit}
-                onClickDelete={openConfirmDelete}
-            />
+            {loading ? (
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <CircularProgress aria-label="Loading…" />
+                </Box>
+            ) : (
+                <Table
+                    columns={columns}
+                    rows={products}
+                    onClickEdit={handelEdit}
+                    onClickDelete={openConfirmDelete}
+                />
+            )}
 
             {/* Product */}
             <Dialog

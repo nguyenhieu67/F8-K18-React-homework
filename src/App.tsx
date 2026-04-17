@@ -1,4 +1,3 @@
-import { Box, CircularProgress } from "@mui/material";
 import { useState } from "react";
 
 import Table from "./2026-04-07/Table";
@@ -9,7 +8,6 @@ import { checkAuth } from "./2026-04-11//plugins/axios";
 
 function App() {
     const [selectId, setSelectId] = useState<number | null>(null);
-    const [loading, setLoading] = useState(false);
 
     const homeworks = [
         {
@@ -42,23 +40,15 @@ function App() {
         const protectedTabs = [3, 4];
 
         if (protectedTabs.includes(id)) {
-            setLoading(true);
             const isAuthorized = await checkAuth();
 
             if (!isAuthorized) {
                 alert("Vui lòng đăng nhập để tiếp tục!");
-                setLoading(false);
                 setSelectId(2);
                 return;
             }
         }
-
-        setLoading(true);
         setSelectId(id);
-
-        setTimeout(() => {
-            setLoading(false);
-        }, 500);
     };
 
     return (
@@ -80,16 +70,6 @@ function App() {
                     <h1 className="flex justify-center">
                         Vui lòng chọn một bài tập để xem
                     </h1>
-                ) : loading ? (
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            mt: 10,
-                        }}
-                    >
-                        <CircularProgress />
-                    </Box>
                 ) : (
                     homeworks.find((item) => item.id === selectId)?.component
                 )}

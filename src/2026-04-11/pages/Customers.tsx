@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { Box, CircularProgress } from "@mui/material";
 
 import api from "../plugins/axios";
 import type { Column, Customer } from "../../utils/type";
@@ -11,18 +12,12 @@ function Customers() {
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
         null,
     );
-    const [isModelOpen, setIsModelOpen] = useState(false);
     const [isConfirmDelete, setIsConfirmDelete] = useState(false);
     const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
         null,
     );
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
-        rank: "",
-    });
+    const [loading, setLoading] = useState(false);
+    const [isModelOpen, setIsModelOpen] = useState(false);
     const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
 
     const toastify = (msg: string) => {
@@ -40,6 +35,17 @@ function Customers() {
 
         toast.error(serverError);
     };
+
+    const customerForm: Customer = {
+        id: 0,
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        rank: "",
+    };
+
+    const [formData, setFormData] = useState(customerForm);
 
     const columns: Column[] = [
         {
@@ -102,13 +108,16 @@ function Customers() {
 
     useEffect(() => {
         const getCustomers = async () => {
+            setLoading(true);
             try {
                 const res = (await api.get(
                     "/customers",
                 )) as unknown as Customer[];
                 setCustomers(res);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 getError(error);
+            } finally {
+                setLoading(false);
             }
         };
         getCustomers();
@@ -118,6 +127,7 @@ function Customers() {
         if (selectedCustomer) {
             const timer = setTimeout(() => {
                 setFormData({
+                    id: 0,
                     name: selectedCustomer.name || "",
                     email: selectedCustomer.email || "",
                     phone: selectedCustomer.phone || "",
@@ -131,13 +141,7 @@ function Customers() {
 
     const handleModelOpen = () => {
         setSelectedCustomer(null);
-        setFormData({
-            name: "",
-            email: "",
-            phone: "",
-            address: "",
-            rank: "",
-        });
+        setFormData(customerForm);
         setIsModelOpen(true);
         setErrors({});
     };
@@ -181,8 +185,6 @@ function Customers() {
             } else {
                 response = await api.post("/customers", {
                     ...formData,
-                    phone: formData.phone.trim() || "",
-                    address: formData.address.trim() || "",
                     rank: formData.rank || "BRONZE",
                 });
 
@@ -242,12 +244,26 @@ function Customers() {
                 </button>
             </div>
             <ToastContainer />
-            <Table
-                columns={columns}
-                rows={customers}
-                onClickEdit={handelEdit}
-                onClickDelete={openConfirmDelete}
-            />
+
+            {loading ? (
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        mt: 10,
+                    }}
+                >
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <Table
+                    columns={columns}
+                    rows={customers}
+                    onClickEdit={handelEdit}
+                    onClickDelete={openConfirmDelete}
+                />
+            )}
+
             {/* Customer */}
             <Dialog
                 title={
