@@ -7,7 +7,7 @@ import {
     DialogContent,
 } from "@mui/material";
 
-import type { Customer } from "../../../utils/type";
+import type { Customer } from "../../../../utils/type";
 
 interface Props {
     customer: Customer | null;

@@ -10,7 +10,7 @@ import {
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
 
-import type { Column, Row } from "../../utils/type";
+import type { Column, Row } from "../../../utils/type";
 
 interface Props {
     columns: Column[];
