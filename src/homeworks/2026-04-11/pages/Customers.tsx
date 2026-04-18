@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import {
@@ -11,7 +12,8 @@ import {
 } from "@mui/material";
 
 import api from "../plugins/axios";
-import type { Column, Customer } from "../../utils/type";
+import config from "../../../config";
+import type { Column, Customer } from "../../../utils/type";
 import { Table, Dialog, CustomerDialog } from "../components";
 
 function Customers() {
@@ -247,6 +249,21 @@ function Customers() {
 
     return (
         <div>
+            <nav className="flex gap-5 text-white">
+                <NavLink
+                    to={config.routes.homework_41_customers}
+                    className="p-2 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-400"
+                >
+                    Customers
+                </NavLink>
+                <NavLink
+                    to={config.routes.homework_41_products}
+                    className="p-2 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-400"
+                >
+                    Products
+                </NavLink>
+            </nav>
+
             {loading ? (
                 <Box
                     sx={{

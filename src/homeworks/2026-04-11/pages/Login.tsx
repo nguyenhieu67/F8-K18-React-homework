@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api, { isTokenExpired } from "../plugins/axios";
-
-interface Props {
-    onLoginSuccess: () => void;
-}
+import { useNavigate } from "react-router-dom";
 
 interface AuthResponse {
     accessToken: string;
     refreshToken: string;
 }
 
-function Login({ onLoginSuccess }: Props) {
+function Login() {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -20,15 +17,17 @@ function Login({ onLoginSuccess }: Props) {
         {},
     );
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         const token = localStorage.getItem("access_token");
         if (token && !isTokenExpired(token)) {
-            onLoginSuccess();
+            navigate("/homework_41/customers");
         } else {
             localStorage.removeItem("access_token");
             localStorage.removeItem("refresh_token");
         }
-    }, [onLoginSuccess]);
+    }, [navigate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -83,9 +82,8 @@ function Login({ onLoginSuccess }: Props) {
             localStorage.setItem("access_token", accessToken);
             localStorage.setItem("refresh_token", refreshToken);
 
-            if (onLoginSuccess) onLoginSuccess();
-
             toast.success("Login successful");
+            navigate("/homework_41/customers");
             return accessToken;
         } catch (error) {
             console.error("Lỗi kết nối hoặc CORS:", error);
@@ -93,7 +91,7 @@ function Login({ onLoginSuccess }: Props) {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center h-screen">
             <h1 className="text-2xl mb-4 font-bold">Login</h1>
             <form className="flex flex-col gap-4 shadow-lg w-fit p-6 rounded-xl">
                 <div>
