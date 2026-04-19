@@ -83,4 +83,9 @@ api.interceptors.response.use(
     },
 );
 
+export async function checkAuth() {
+    const token = await getValidToken();
+    return !!token;
+}
+
 export default api;

@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 import { publicRoutes } from "./routes/Routes";
 import DefaultLayout from "./layouts/DefaultLayout";
@@ -6,6 +7,7 @@ import DefaultLayout from "./layouts/DefaultLayout";
 function App() {
     return (
         <div>
+            <ToastContainer />
             <Router basename="/F8-K18-React-homework">
                 <Routes>
                     {publicRoutes.map((route, index) => {

@@ -16,8 +16,8 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
-import api, { isTokenExpired } from "../plugins/axios";
 import { useNavigate } from "react-router-dom";
+import { fetchApi } from "../../../utils/api";
 
 interface AuthResponse {
     accessToken: string;
@@ -43,8 +43,8 @@ function Login() {
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
-        if (token && !isTokenExpired(token)) {
-            navigate("/homework_41/customers");
+        if (token) {
+            navigate("/homework_43/customers");
         } else {
             localStorage.removeItem("access_token");
             localStorage.removeItem("refresh_token");
@@ -96,7 +96,7 @@ function Login() {
         };
 
         try {
-            const response = (await api.post(
+            const response = (await fetchApi.post(
                 "/auth/signin",
                 payload,
             )) as unknown as AuthResponse;
@@ -109,7 +109,7 @@ function Login() {
             localStorage.setItem("refresh_token", refreshToken);
 
             toast.success("Login successful");
-            navigate("/homework_41/customers");
+            navigate("/homework_43/customers");
             return accessToken;
         } catch (error) {
             console.error("Lỗi kết nối hoặc CORS:", error);

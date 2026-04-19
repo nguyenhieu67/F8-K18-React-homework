@@ -5,6 +5,9 @@ const routes = {
     homework_41_customers: "/homework_41/customers",
     homework_41_products: "/homework_41/products",
     homework_42: "/homework_42",
+    homework_43_login: "/homework_43/login",
+    homework_43_customers: "/homework_43/customers",
+    homework_43_products: "/homework_43/products",
 };
 
 export default routes;

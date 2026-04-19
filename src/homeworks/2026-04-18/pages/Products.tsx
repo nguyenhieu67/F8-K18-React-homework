@@ -9,10 +9,10 @@ import {
     CircularProgress,
 } from "@mui/material";
 
-import api from "../plugins/axios";
 import config from "../../../config";
-import { Table, Dialog, ProductDialog } from "../components";
 import type { Column, Product, Category } from "../../../utils/type";
+import { Table, Dialog, ProductDialog } from "../components";
+import { fetchApi } from "../../../utils/api";
 import { getError, toastMsg } from "../../../utils/message";
 
 function Products() {
@@ -101,21 +101,20 @@ function Products() {
             setLoading(true);
             try {
                 const [products, categories] = await Promise.all([
-                    api.get<Product[]>("/products"),
-                    api.get<Category[]>("/categories"),
+                    fetchApi.get<Product[]>("/products"),
+                    fetchApi.get<Category[]>("/categories"),
                 ]);
 
                 setProducts(products as unknown as Product[]);
                 setCategories(categories as unknown as Category[]);
             } catch (error: unknown) {
-                navigate(config.routes.homework_41_login);
                 getError(error);
             } finally {
                 setLoading(false);
             }
         };
         getProducts();
-    }, [navigate]);
+    }, []);
 
     useEffect(() => {
         if (selectedProduct) {
@@ -175,20 +174,20 @@ function Products() {
             let response: Product;
 
             if (id) {
-                response = await api.put(`/products/${id}`, {
+                response = (await fetchApi.put(`/products/${id}`, {
                     ...formData,
                     categoryId: Number(formData.category.id),
-                });
+                })) as Product;
 
                 setProducts((prev) =>
                     prev.map((item) => (item.id === id ? response : item)),
                 );
                 toastMsg("Updated successfully");
             } else {
-                response = await api.post("/products", {
+                response = (await fetchApi.post("/products", {
                     ...formData,
                     categoryId: Number(formData.category.id),
-                });
+                })) as Product;
 
                 setProducts((prev) => [response, ...prev]);
                 toastMsg("Created successfully");
@@ -219,7 +218,7 @@ function Products() {
         if (!productIdToDelete) return;
 
         try {
-            await api.delete(`/products/${productIdToDelete}`);
+            await fetchApi.delete(`/products/${productIdToDelete}`);
             setProducts((prev) =>
                 prev.filter((item) => item.id !== productIdToDelete),
             );
@@ -236,20 +235,20 @@ function Products() {
         if (!confirm("Are you sure logout")) return;
 
         localStorage.clear();
-        navigate(config.routes.homework_41_login);
+        navigate(config.routes.homework_43_login);
     };
 
     return (
         <div>
             <nav className="flex gap-5 text-white mb-5">
                 <NavLink
-                    to={config.routes.homework_41_customers}
+                    to={config.routes.homework_43_customers}
                     className="p-2 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-400"
                 >
                     Customers
                 </NavLink>
                 <NavLink
-                    to={config.routes.homework_41_products}
+                    to={config.routes.homework_43_products}
                     className="p-2 bg-blue-400 rounded-lg cursor-pointer hover:bg-blue-400"
                 >
                     Products

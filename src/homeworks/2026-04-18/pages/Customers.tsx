@@ -9,10 +9,10 @@ import {
     CircularProgress,
 } from "@mui/material";
 
-import api from "../plugins/axios";
 import config from "../../../config";
 import type { Column, Customer } from "../../../utils/type";
 import { Table, Dialog, CustomerDialog } from "../components";
+import { fetchApi } from "../../../utils/api";
 import { getError, toastMsg } from "../../../utils/message";
 
 function Customers() {
@@ -28,7 +28,6 @@ function Customers() {
     const [loading, setLoading] = useState(false);
     const [isModelOpen, setIsModelOpen] = useState(false);
     const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
-    const navigate = useNavigate();
 
     const customerForm: Customer = {
         id: 0,
@@ -116,19 +115,18 @@ function Customers() {
         const getCustomers = async () => {
             setLoading(true);
             try {
-                const res = (await api.get(
+                const res = (await fetchApi.get(
                     "/customers",
                 )) as unknown as Customer[];
                 setCustomers(res);
             } catch (error: unknown) {
-                navigate(config.routes.homework_41_login);
                 getError(error);
             } finally {
                 setLoading(false);
             }
         };
         getCustomers();
-    }, [navigate]);
+    }, []);
 
     useEffect(() => {
         if (selectedCustomer) {
@@ -190,17 +188,19 @@ function Customers() {
             let response: Customer;
 
             if (id) {
-                response = await api.put(`/customers/${id}`, { ...formData });
+                response = (await fetchApi.put(`/customers/${id}`, {
+                    ...formData,
+                })) as Customer;
 
                 setCustomers((prev) =>
                     prev.map((item) => (item.id === id ? response : item)),
                 );
                 toastMsg("Updated successfully");
             } else {
-                response = await api.post("/customers", {
+                response = (await fetchApi.post("/customers", {
                     ...formData,
                     rank: formData.rank || "BRONZE",
-                });
+                })) as Customer;
 
                 setCustomers((prev) => [response, ...prev]);
                 toastMsg("Created successfully");
@@ -231,7 +231,7 @@ function Customers() {
         if (!customerIdToDelete) return;
 
         try {
-            await api.delete(`/customers/${customerIdToDelete}`);
+            await fetchApi.delete(`/customers/${customerIdToDelete}`);
             setCustomers((prev) =>
                 prev.filter((item) => item.id !== customerIdToDelete),
             );
@@ -246,25 +246,26 @@ function Customers() {
             setCustomerIdToDelete(null);
         }
     };
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         if (!confirm("Are you sure logout")) return;
 
         localStorage.clear();
-        navigate(config.routes.homework_41_login);
+        navigate(config.routes.homework_43_login);
     };
 
     return (
         <div>
             <nav className="flex gap-5 text-white mb-5">
                 <NavLink
-                    to={config.routes.homework_41_customers}
+                    to={config.routes.homework_43_customers}
                     className="p-2 bg-blue-400 rounded-lg cursor-pointer hover:bg-blue-400"
                 >
                     Customers
                 </NavLink>
                 <NavLink
-                    to={config.routes.homework_41_products}
+                    to={config.routes.homework_43_products}
                     className="p-2 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-400"
                 >
                     Products

@@ -13,6 +13,10 @@ const sidebarList = [
         path: "/homework_41/login",
         title: "Homework 41 & 42",
     },
+    {
+        path: "/homework_43/login",
+        title: "Homework 43",
+    },
 ];
 
 function Sidebar() {
