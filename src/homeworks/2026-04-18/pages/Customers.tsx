@@ -1,13 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import {
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Box,
-    CircularProgress,
-} from "@mui/material";
+import { Box, CircularProgress, Autocomplete, TextField } from "@mui/material";
 
 import config from "../../../config";
 import type { Column, Customer } from "../../../utils/type";
@@ -20,7 +14,7 @@ function Customers() {
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
         null,
     );
-    const [selectedRank, setSelectedRank] = useState<string>("");
+    const [selectedRank, setSelectedRank] = useState<any>("");
     const [isConfirmDelete, setIsConfirmDelete] = useState(false);
     const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
         null,
@@ -28,6 +22,7 @@ function Customers() {
     const [loading, setLoading] = useState(false);
     const [isModelOpen, setIsModelOpen] = useState(false);
     const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
+    const navigate = useNavigate();
 
     const customerForm: Customer = {
         id: 0,
@@ -39,10 +34,6 @@ function Customers() {
     };
 
     const [formData, setFormData] = useState(customerForm);
-    const filterCustomers =
-        selectedRank === ""
-            ? customers
-            : customers.filter((c) => c.rank === selectedRank);
 
     const columns: Column[] = [
         {
@@ -111,6 +102,34 @@ function Customers() {
         },
     ];
 
+    const rankList = [
+        {
+            id: 1,
+            rank: "GOLD",
+        },
+        {
+            id: 2,
+            rank: "SILVER",
+        },
+        {
+            id: 3,
+            rank: "BRONZE",
+        },
+    ];
+
+    const filterCustomers =
+        selectedRank === ""
+            ? customers
+            : customers.filter((c) => c.rank === selectedRank);
+
+    const rankOptions = rankList.reduce((acc, curr) => {
+        const isExisted = acc.find((item: any) => item.id === curr.id);
+        if (!isExisted) {
+            return [...acc, curr.rank];
+        }
+        return acc;
+    }, [] as any);
+
     useEffect(() => {
         const getCustomers = async () => {
             setLoading(true);
@@ -151,6 +170,13 @@ function Customers() {
         setErrors({});
     };
 
+    const openConfirmDelete = (id: number) => {
+        const findC = customers.find((c) => c.id === id);
+        setSelectedCustomer(findC || null);
+        setCustomerIdToDelete(id);
+        setIsConfirmDelete(true);
+    };
+
     const handleChangeForm = (newData: Customer) => {
         if (newData.name) {
             setErrors((prev) => ({ ...prev, name: "" }));
@@ -179,6 +205,33 @@ function Customers() {
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+    const handelEdit = (id: number) => {
+        const findC = customers.find((c) => c.id === id);
+        setSelectedCustomer(findC || null);
+        setIsModelOpen(true);
+        setErrors({});
+    };
+
+    const handleDelete = async () => {
+        if (!customerIdToDelete) return;
+
+        try {
+            await fetchApi.delete(`/customers/${customerIdToDelete}`);
+            setCustomers((prev) =>
+                prev.filter((item) => item.id !== customerIdToDelete),
+            );
+            toastMsg("Deleted successfully");
+        } catch (error) {
+            alert(
+                "Vì khách hàng đang có order nên không thể xóa khách hàng được!!!",
+            );
+            getError(error);
+        } finally {
+            setIsConfirmDelete(false);
+            setCustomerIdToDelete(null);
+        }
     };
 
     const handleSubmit = async (id: number) => {
@@ -212,41 +265,6 @@ function Customers() {
             getError(error);
         }
     };
-
-    const handelEdit = (id: number) => {
-        const findC = customers.find((c) => c.id === id);
-        setSelectedCustomer(findC || null);
-        setIsModelOpen(true);
-        setErrors({});
-    };
-
-    const openConfirmDelete = (id: number) => {
-        const findC = customers.find((c) => c.id === id);
-        setSelectedCustomer(findC || null);
-        setCustomerIdToDelete(id);
-        setIsConfirmDelete(true);
-    };
-
-    const handleDelete = async () => {
-        if (!customerIdToDelete) return;
-
-        try {
-            await fetchApi.delete(`/customers/${customerIdToDelete}`);
-            setCustomers((prev) =>
-                prev.filter((item) => item.id !== customerIdToDelete),
-            );
-            toastMsg("Deleted successfully");
-        } catch (error) {
-            alert(
-                "Vì khách hàng đang có order nên không thể xóa khách hàng được!!!",
-            );
-            getError(error);
-        } finally {
-            setIsConfirmDelete(false);
-            setCustomerIdToDelete(null);
-        }
-    };
-    const navigate = useNavigate();
 
     const handleLogout = () => {
         if (!confirm("Are you sure logout")) return;
@@ -299,26 +317,28 @@ function Customers() {
                         </button>
                     </div>
 
-                    <div className="flex justify-end items-center">
-                        <FormControl sx={{ width: "20%" }}>
-                            <InputLabel id="rank">Rank</InputLabel>
-                            <Select
-                                label="rank"
-                                labelId="rank"
-                                value={selectedRank}
-                                onChange={(e) =>
-                                    setSelectedRank(e.target.value)
-                                }
-                            >
-                                <MenuItem value="">
-                                    <em>All ranks</em>
-                                </MenuItem>
-                                <MenuItem value="GOLD">Gold</MenuItem>
-                                <MenuItem value="SILVER">Silver</MenuItem>
-                                <MenuItem value="BRONZE">Bronze</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div>
+                    <Autocomplete
+                        sx={{ width: 200, marginLeft: "auto" }}
+                        options={rankOptions}
+                        getOptionLabel={(option) => option || ""}
+                        value={
+                            rankOptions.find(
+                                (c: string) => c === selectedRank,
+                            ) || null
+                        }
+                        // check id
+                        // getOptionKey={(option) => option}
+                        // check curr id
+                        // isOptionEqualToValue={(option, value) =>
+                        //     option === value
+                        // }
+                        onChange={(_, newValue) =>
+                            setSelectedRank(newValue ? newValue : "")
+                        }
+                        renderInput={(params) => (
+                            <TextField {...params} label="Rank" />
+                        )}
+                    />
                     <Table
                         columns={columns}
                         rows={filterCustomers}
@@ -346,7 +366,7 @@ function Customers() {
                 />
             </Dialog>
             <Dialog
-                title={`Are you sure delete ${selectedCustomer?.name || "customer"}?`}
+                title={`Are you sure delete customer is name: ${selectedCustomer?.name || "customer"}?`}
                 isOpen={isConfirmDelete}
                 onClose={() => setIsConfirmDelete(false)}
                 onSubmit={handleDelete}

@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import {
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Box,
-    CircularProgress,
-} from "@mui/material";
+import { Box, CircularProgress, Autocomplete, TextField } from "@mui/material";
 
 import config from "../../../config";
 import type { Column, Product, Category } from "../../../utils/type";
@@ -96,6 +89,14 @@ function Products() {
         },
     ];
 
+    const categoryOptions = products.reduce((acc, curr) => {
+        const isExisted = acc.find((item) => item.id === curr.category.id);
+        if (!isExisted) {
+            return [...acc, curr.category];
+        }
+        return acc;
+    }, [] as Category[]);
+
     useEffect(() => {
         const getProducts = async () => {
             setLoading(true);
@@ -139,6 +140,13 @@ function Products() {
         setErrors({});
     };
 
+    const openConfirmDelete = (id: number) => {
+        const findP = products.find((p) => p.id === id);
+        setSelectedProduct(findP || null);
+        setProductIdToDelete(id);
+        setIsConfirmDelete(true);
+    };
+
     const handleChangeForm = (newData: Product) => {
         if (newData.name) {
             setErrors((prev) => ({ ...prev, name: "" }));
@@ -165,6 +173,30 @@ function Products() {
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+    const handelEdit = (id: number) => {
+        const findP = products.find((p) => p.id === id);
+        setSelectedProduct(findP || null);
+        setIsModelOpen(true);
+        setErrors({});
+    };
+
+    const handleDelete = async () => {
+        if (!productIdToDelete) return;
+
+        try {
+            await fetchApi.delete(`/products/${productIdToDelete}`);
+            setProducts((prev) =>
+                prev.filter((item) => item.id !== productIdToDelete),
+            );
+            toastMsg("Deleted successfully");
+        } catch (error) {
+            getError(error);
+        } finally {
+            setIsConfirmDelete(false);
+            setProductIdToDelete(null);
+        }
     };
 
     const handleSubmit = async (id: number) => {
@@ -197,37 +229,6 @@ function Products() {
             setErrors({});
         } catch (error) {
             getError(error);
-        }
-    };
-
-    const handelEdit = (id: number) => {
-        const findP = products.find((p) => p.id === id);
-        setSelectedProduct(findP || null);
-        setIsModelOpen(true);
-        setErrors({});
-    };
-
-    const openConfirmDelete = (id: number) => {
-        const findP = products.find((p) => p.id === id);
-        setSelectedProduct(findP || null);
-        setProductIdToDelete(id);
-        setIsConfirmDelete(true);
-    };
-
-    const handleDelete = async () => {
-        if (!productIdToDelete) return;
-
-        try {
-            await fetchApi.delete(`/products/${productIdToDelete}`);
-            setProducts((prev) =>
-                prev.filter((item) => item.id !== productIdToDelete),
-            );
-            toastMsg("Deleted successfully");
-        } catch (error) {
-            getError(error);
-        } finally {
-            setIsConfirmDelete(false);
-            setProductIdToDelete(null);
         }
     };
 
@@ -276,31 +277,30 @@ function Products() {
                         </button>
                     </div>
 
-                    <div className="flex justify-end items-center">
-                        <FormControl sx={{ width: "20%" }}>
-                            <InputLabel id="categories">Categories</InputLabel>
-                            <Select
-                                label="Categories"
-                                labelId="categories"
-                                value={selectedCategory}
-                                onChange={(e) =>
-                                    setSelectedCategory(e.target.value)
-                                }
-                            >
-                                <MenuItem value="">
-                                    <em>All categories</em>
-                                </MenuItem>
-                                {categories.map((category) => (
-                                    <MenuItem
-                                        key={category.id}
-                                        value={String(category.id)}
-                                    >
-                                        {category.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </div>
+                    <Autocomplete
+                        sx={{ width: 200, marginLeft: "auto" }}
+                        options={categoryOptions}
+                        getOptionLabel={(option) => option.name || ""}
+                        value={
+                            categoryOptions.find(
+                                (c) => c.id === Number(selectedCategory),
+                            ) || null
+                        }
+                        // check id
+                        // getOptionKey={(option) => option.id}
+                        // check curr id
+                        // isOptionEqualToValue={(option, value) =>
+                        //     option.id === value?.id
+                        // }
+                        onChange={(_, newValue) => {
+                            setSelectedCategory(
+                                newValue ? newValue.id.toString() : "",
+                            );
+                        }}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Category" />
+                        )}
+                    />
                     <Table
                         columns={columns}
                         rows={filterProducts}
@@ -330,7 +330,7 @@ function Products() {
             </Dialog>
 
             <Dialog
-                title={`Are you sure delete ${selectedProduct?.name || "product"}?`}
+                title={`Are you sure delete product is name: ${selectedProduct?.name || "product"}?`}
                 isOpen={isConfirmDelete}
                 onClose={() => setIsConfirmDelete(false)}
                 onSubmit={handleDelete}
