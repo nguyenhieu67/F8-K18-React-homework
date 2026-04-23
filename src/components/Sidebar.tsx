@@ -1,21 +1,26 @@
 import { NavLink, useLocation } from "react-router-dom";
+import config from "../config";
 
 const sidebarList = [
     {
-        path: "/",
+        path: config.routes.home,
         title: "Home",
     },
     {
-        path: "/homework_40",
+        path: config.routes.homework_40,
         title: "Homework 40",
     },
     {
-        path: "/homework_41/login",
+        path: config.routes.homework_41_login,
         title: "Homework 41 & 42",
     },
     {
-        path: "/homework_43/login",
+        path: config.routes.homework_43_login,
         title: "Homework 43",
+    },
+    {
+        path: config.routes.homework_44_login,
+        title: "Homework 44",
     },
 ];
 
@@ -32,7 +37,7 @@ function Sidebar() {
     };
 
     return (
-        <aside className="bg-[#2d3e51] p-6.25 h-screen">
+        <aside className="p-6.25 h-screen">
             <h1 className="mb-7.5 text-center text-2xl font-bold text-[#3498db]">
                 Homework List
             </h1>

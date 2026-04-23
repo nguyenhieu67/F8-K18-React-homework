@@ -4,9 +4,11 @@ import { Box, CircularProgress, Autocomplete, TextField } from "@mui/material";
 
 import config from "../../../config";
 import type { Column, Product, Category } from "../../../utils/type";
-import { Table, Dialog, ProductDialog } from "../components";
+import { Dialog, ProductDialog } from "../components";
 import { fetchApi } from "../../../utils/api";
 import { getError, toastMsg } from "../../../utils/message";
+import Table from "../../../components/Table";
+import { formatPrice } from "../../../utils/action";
 
 function Products() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -76,8 +78,7 @@ function Products() {
         {
             value: "price",
             text: "Price",
-            render: (product: Product) =>
-                Number(product.price).toLocaleString("vi-VN") + "đ",
+            render: (product: Product) => formatPrice(product?.price),
         },
         {
             value: "remaining",

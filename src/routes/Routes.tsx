@@ -12,6 +12,10 @@ import Products from "../homeworks/2026-04-11/pages/Products";
 import Login1 from "../homeworks/2026-04-18/pages/Login";
 import Customers1 from "../homeworks/2026-04-18/pages/Customers";
 import Products1 from "../homeworks/2026-04-18/pages/Products";
+// Homework 44
+import Test from "../homeworks/2026-04-21/pages/Test";
+import Login2 from "../homeworks/2026-04-21/pages/Login";
+import Orders from "../homeworks/2026-04-21/pages/Orders";
 
 // Public routes
 const publicRoutes = [
@@ -25,6 +29,10 @@ const publicRoutes = [
     { path: config.routes.homework_43_login, component: Login1 },
     { path: config.routes.homework_43_customers, component: Customers1 },
     { path: config.routes.homework_43_products, component: Products1 },
+
+    { path: config.routes.homework_44, component: Test },
+    { path: config.routes.homework_44_login, component: Login2 },
+    { path: config.routes.homework_44_orders, component: Orders },
 ];
 
 // Private routes

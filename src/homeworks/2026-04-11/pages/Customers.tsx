@@ -12,8 +12,9 @@ import {
 import api from "../plugins/axios";
 import config from "../../../config";
 import type { Column, Customer } from "../../../utils/type";
-import { Table, Dialog, CustomerDialog } from "../components";
+import { Dialog, CustomerDialog } from "../components";
 import { getError, toastMsg } from "../../../utils/message";
+import Table from "../../../components/Table";
 
 function Customers() {
     const [customers, setCustomers] = useState<Customer[]>([]);

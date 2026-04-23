@@ -11,9 +11,10 @@ import {
 
 import api from "../plugins/axios";
 import config from "../../../config";
-import { Table, Dialog, ProductDialog } from "../components";
+import { Dialog, ProductDialog } from "../components";
 import type { Column, Product, Category } from "../../../utils/type";
 import { getError, toastMsg } from "../../../utils/message";
+import Table from "../../../components/Table";
 
 function Products() {
     const [products, setProducts] = useState<Product[]>([]);

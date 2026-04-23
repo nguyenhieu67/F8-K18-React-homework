@@ -38,5 +38,14 @@ interface Product extends Row {
     remaining?: string;
     category: Category;
 }
+interface Order extends Row {
+    id: number;
+    productId: string | number;
+    product?: Product;
+    customerId: string | number;
+    customer?: Customer;
+    amount?: string | number;
+    status?: string;
+}
 
-export type { Row, Column, Customer, Product, Category };
+export type { Row, Column, Category, Customer, Product, Order };

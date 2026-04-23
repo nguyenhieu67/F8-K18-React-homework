@@ -5,9 +5,11 @@ import { Box, CircularProgress, Autocomplete, TextField } from "@mui/material";
 
 import config from "../../../config";
 import type { Column, Customer } from "../../../utils/type";
-import { Table, Dialog, CustomerDialog } from "../components";
+import { Dialog, CustomerDialog } from "../components";
 import { fetchApi } from "../../../utils/api";
 import { getError, toastMsg } from "../../../utils/message";
+import Table from "../../../components/Table";
+import { formatAndMaskPhone } from "../../../utils/action";
 
 function Customers() {
     const [customers, setCustomers] = useState<Customer[]>([]);
@@ -61,23 +63,12 @@ function Customers() {
             text: "Contact",
             render: (customer: Customer) => {
                 const phone = customer.phone;
-                if (phone?.length === 10) {
-                    return (
-                        <div>
-                            {customer.email}
-                            <br />
-                            <small>
-                                {phone.slice(0, 4)}.{phone.slice(4, 7)}
-                                .xxx
-                            </small>
-                        </div>
-                    );
-                }
+
                 return (
                     <div>
                         {customer.email}
                         <br />
-                        <small>{phone}</small>
+                        <small>{formatAndMaskPhone(phone)}</small>
                     </div>
                 );
             },
