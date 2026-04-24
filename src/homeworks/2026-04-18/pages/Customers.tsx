@@ -68,7 +68,7 @@ function Customers() {
                     <div>
                         {customer.email}
                         <br />
-                        <small>{formatAndMaskPhone(phone)}</small>
+                        <small>{formatAndMaskPhone(phone as string)}</small>
                     </div>
                 );
             },

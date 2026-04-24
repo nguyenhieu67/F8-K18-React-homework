@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Box, CircularProgress, Autocomplete, TextField } from "@mui/material";
@@ -78,7 +79,7 @@ function Products() {
         {
             value: "price",
             text: "Price",
-            render: (product: Product) => formatPrice(product?.price),
+            render: (product: Product) => formatPrice(product?.price as any),
         },
         {
             value: "remaining",

@@ -17,7 +17,7 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import { useNavigate } from "react-router-dom";
-import api from "../../2026-04-11/plugins/axios";
+import { fetchApi } from "../../../utils/api";
 
 interface AuthResponse {
     accessToken: string;
@@ -96,7 +96,7 @@ function Login() {
         };
 
         try {
-            const response = (await api.post(
+            const response = (await fetchApi.post(
                 "/auth/signin",
                 payload,
             )) as unknown as AuthResponse;

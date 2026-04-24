@@ -9,13 +9,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 
 import config from "../../../config";
-import api from "../../2026-04-11/plugins/axios";
 import type { Column, Customer, Order, Product } from "../../../utils/type";
 import { Dialog, OrderDialog } from "../components";
 import { getError, toastMsg } from "../../../utils/message";
 import Table from "../../../components/Table";
 import { formatPrice, getStatusColor } from "../../../utils/action";
 import CardItem from "../components/CardItem";
+import { fetchApi } from "../../../utils/api";
 
 function Orders() {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -131,9 +131,9 @@ function Orders() {
             setLoading(true);
             try {
                 const [products, customers, orders] = await Promise.all([
-                    api.get<Product[]>("/products"),
-                    api.get<Customer[]>("/customers"),
-                    api.get<Order[]>("/orders"),
+                    fetchApi.get<Product[]>("/products"),
+                    fetchApi.get<Customer[]>("/customers"),
+                    fetchApi.get<Order[]>("/orders"),
                 ]);
 
                 setProducts(products as unknown as Product[]);
@@ -231,7 +231,7 @@ function Orders() {
         if (!orderIdToDelete) return;
 
         try {
-            await api.delete(`/orders/${orderIdToDelete}`);
+            await fetchApi.delete(`/orders/${orderIdToDelete}`);
             setOrders((prev) =>
                 prev.filter((item) => item.id !== orderIdToDelete),
             );
@@ -252,7 +252,7 @@ function Orders() {
                 let response: Order;
 
                 if (id) {
-                    response = (await api.put(`/orders/${id}`, {
+                    response = (await fetchApi.put(`/orders/${id}`, {
                         ...formData,
                         amount: Number(formData.amount),
                     })) as Order;
@@ -262,7 +262,7 @@ function Orders() {
                     );
                     toastMsg("Updated successfully");
                 } else {
-                    response = (await api.post("/orders", {
+                    response = (await fetchApi.post("/orders", {
                         ...formData,
                         amount: Number(formData.amount),
                     })) as Order;

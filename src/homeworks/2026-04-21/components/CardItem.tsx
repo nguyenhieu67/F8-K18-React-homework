@@ -7,7 +7,7 @@ interface Props {
 }
 
 function CardItem({ children, borderColor }: Props) {
-    console.log("re-render-Card", "borderColor: ", borderColor);
+    console.log("re-render-Card");
     return (
         <Card sx={{ borderLeft: `5px solid ${borderColor || "#333"}` }}>
             <CardContent>{children}</CardContent>

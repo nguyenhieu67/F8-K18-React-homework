@@ -18,6 +18,7 @@ function TableFooterC({
     onRowsPerPageChange,
 }: Props) {
     console.log("re-render-TableFooter");
+
     return (
         <TableFooter>
             <TableRow>
