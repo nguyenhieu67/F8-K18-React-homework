@@ -1,6 +1,7 @@
-import { TableHead, TableRow, TableCell } from "@mui/material";
-import type { Column } from "../../utils/type";
 import { memo } from "react";
+import { TableHead, TableRow, TableCell } from "@mui/material";
+
+import type { Column } from "../../utils/type";
 
 interface Props {
     columns: Column[];

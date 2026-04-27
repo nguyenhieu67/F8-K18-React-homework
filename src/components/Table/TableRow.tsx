@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { forwardRef, memo } from "react";
 import { TableCell, TableRow } from "@mui/material";
+
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
-import { forwardRef, memo } from "react";
 
 const TableRowC = forwardRef<HTMLTableRowElement, any>(function TableRowC(
     { row, columns, onClickEdit, onClickDelete },

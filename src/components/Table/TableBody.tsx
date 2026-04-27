@@ -1,7 +1,8 @@
+import { useEffect, useRef, useState } from "react";
 import { TableBody, TableRow, TableCell } from "@mui/material";
+
 import type { Column, Row } from "../../utils/type";
 import TableRowC from "./TableRow";
-import { memo, useEffect, useRef, useState } from "react";
 
 interface Props {
     columns: Column[];
@@ -52,4 +53,4 @@ function TableBodyC({
     );
 }
 
-export default memo(TableBodyC);
+export default TableBodyC;

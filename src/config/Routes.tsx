@@ -11,6 +11,7 @@ const routes = {
     homework_44: "/homework_44/test",
     homework_44_login: "/homework_44/login",
     homework_44_orders: "/homework_44/orders",
+    homework_45: "/homework_45",
 };
 
 export default routes;

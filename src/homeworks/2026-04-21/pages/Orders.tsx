@@ -106,6 +106,7 @@ function Orders() {
                 if (curr.status === "done") {
                     acc.total += price * quantity;
                 }
+
                 return acc;
             },
             {
@@ -219,6 +220,8 @@ function Orders() {
 
     const handelEdit = useCallback(
         (id: number) => {
+            console.log("handleEdit re-render");
+
             const findO = orders.find((o) => o.id === id);
             setSelectedOrders(findO || null);
             setIsModelOpen(true);
@@ -229,6 +232,8 @@ function Orders() {
 
     const handleDelete = useCallback(async () => {
         if (!orderIdToDelete) return;
+
+        console.log("handleDelete re-render");
 
         try {
             await fetchApi.delete(`/orders/${orderIdToDelete}`);

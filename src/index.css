@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
+body {
+  user-select: none;
+}
+
 .delivering {
-    background: #e1f5fe;
-    color: #0288d1;
+  background: #e1f5fe;
+  color: #0288d1;
 }
 .done {
-    background: #e8f5e9;
-    color: #27ae60;
+  background: #e8f5e9;
+  color: #27ae60;
 }
 .pending {
-    background: #fff3e0;
-    color: #e67e22;
+  background: #fff3e0;
+  color: #e67e22;
 }
 .cancel {
-    background: #ffebee;
-    color: #c0392b;
+  background: #ffebee;
+  color: #c0392b;
 }

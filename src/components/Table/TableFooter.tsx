@@ -1,4 +1,5 @@
 import { TableFooter, TablePagination, TableRow } from "@mui/material";
+
 import type { Row } from "../../utils/type";
 import { TableFooterActions } from "./TableFooterAction";
 
@@ -18,7 +19,6 @@ function TableFooterC({
     onRowsPerPageChange,
 }: Props) {
     console.log("re-render-TableFooter");
-
     return (
         <TableFooter>
             <TableRow>

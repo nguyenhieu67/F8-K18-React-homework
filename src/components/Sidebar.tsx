@@ -22,6 +22,10 @@ const sidebarList = [
         path: config.routes.homework_44_login,
         title: "Homework 44",
     },
+    {
+        path: config.routes.homework_45,
+        title: "Homework 45",
+    },
 ];
 
 function Sidebar() {

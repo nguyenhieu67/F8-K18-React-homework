@@ -1,10 +1,10 @@
 import { TableContainer, Paper, Table } from "@mui/material";
-import { memo, useState, useMemo } from "react";
-import type { Column, Row } from "../../utils/type";
+// import { useState, useMemo } from "react";
 
+import type { Column, Row } from "../../utils/type";
 import TableHeader from "./TableHeader";
 import TableBodyC from "./TableBody";
-import TableFooterC from "./TableFooter";
+// import TableFooterC from "./TableFooter";
 
 interface Props {
     columns: Column[];
@@ -24,22 +24,22 @@ function TableComp({
     onClickDelete,
 }: Props) {
     // Table footer handle
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    // const [page, setPage] = useState(0);
+    // const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const emptyRows = useMemo(() => {
-        return page > 0
-            ? Math.max(0, (1 + page) * rowsPerPage - rows.length)
-            : 0;
-    }, [rows, page, rowsPerPage]);
+    // const emptyRows = useMemo(() => {
+    //     return page > 0
+    //         ? Math.max(0, (1 + page) * rowsPerPage - rows.length)
+    //         : 0;
+    // }, [rows, page, rowsPerPage]);
 
-    const visibleRows = useMemo(() => {
-        if (!rows || rows.length === 0) return [];
-        const start = page * rowsPerPage;
-        const end = start + rowsPerPage;
+    // const visibleRows = useMemo(() => {
+    //     if (!rows || rows.length === 0) return [];
+    //     const start = page * rowsPerPage;
+    //     const end = start + rowsPerPage;
 
-        return rowsPerPage > 0 ? rows.slice(start, end) : rows;
-    }, [rows, page, rowsPerPage]);
+    //     return rowsPerPage > 0 ? rows.slice(start, end) : rows;
+    // }, [rows, page, rowsPerPage]);
 
     console.log("re-render-Table");
 
@@ -49,12 +49,12 @@ function TableComp({
                 <TableHeader columns={columns} />
                 <TableBodyC
                     columns={columns}
-                    rows={visibleRows}
-                    layout={emptyRows}
+                    rows={rows}
+                    // layout={emptyRows}
                     onClickEdit={onClickEdit}
                     onClickDelete={onClickDelete}
                 />
-                <TableFooterC
+                {/* <TableFooterC
                     rows={rows}
                     page={page}
                     rowsPerPage={rowsPerPage}
@@ -63,10 +63,10 @@ function TableComp({
                         setRowsPerPage(newSize);
                         setPage(0);
                     }}
-                />
+                /> */}
             </Table>
         </TableContainer>
     );
 }
 
-export default memo(TableComp);
+export default TableComp;
