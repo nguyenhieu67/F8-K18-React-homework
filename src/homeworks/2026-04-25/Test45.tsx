@@ -188,6 +188,7 @@ function Test45() {
           questionText: q.text,
           userAnswer:
             selectedIdx !== undefined ? q.options[selectedIdx] : "Chưa trả lời",
+          isCorrect: q.correct,
         };
       });
 
@@ -244,12 +245,20 @@ function Test45() {
                   </p>
                   <p>{item.questionText}</p>
                 </div>
-                <p className="mt-2">
-                  <span className="mr-2 rounded-lg bg-cyan-500 px-2 py-1 text-white">
-                    Đáp án
-                  </span>{" "}
-                  {item.userAnswer}
-                </p>
+                <div className="mt-2 flex flex-col gap-2">
+                  <p>
+                    <span className="mr-2 rounded-lg bg-cyan-500 px-2 py-1 text-white">
+                      Câu trả lời
+                    </span>{" "}
+                    {item.userAnswer}
+                  </p>
+                  <p>
+                    <span className="mr-2 rounded-lg bg-cyan-500 px-2 py-1 text-white">
+                      Đáp án đúng
+                    </span>{" "}
+                    {item.isCorrect}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

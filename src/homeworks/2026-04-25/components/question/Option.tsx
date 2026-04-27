@@ -14,16 +14,16 @@ function Option({ option, index, isSelected, onSelect }: Props) {
   };
 
   return (
-    <div className="mt-2 flex cursor-pointer items-center gap-2">
+    <div
+      className="mt-2 flex w-fit cursor-pointer items-center gap-2"
+      onClick={handleSelect}
+    >
       {isSelected ? (
         <RadioButtonCheckedRoundedIcon fontSize="small" color="info" />
       ) : (
         <RadioButtonUncheckedRoundedIcon fontSize="small" />
       )}
-      <span
-        onClick={handleSelect}
-        className={` ${isSelected ? "font-medium text-[#0288d1]" : ""}`}
-      >
+      <span className={` ${isSelected ? "font-medium text-[#0288d1]" : ""}`}>
         {option}
       </span>
     </div>
